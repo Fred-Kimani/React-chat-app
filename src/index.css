@@ -1,0 +1,191 @@
+@import url('https://fonts.googleapis.com/css2?family=Comic+Relief:wght@400;700&display=swap');
+
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html{
+  height: 100%;
+  width: 100%;
+
+}
+
+body{
+  height: 100%;
+  width: 100%;
+
+  
+}
+
+#root{
+  height: 100%;
+  width: 100%;
+
+}
+
+*{
+  font-family: "Comic Relief", system-ui;
+}
+/* Welcome page styles */
+.Welcome-Page-Container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgba(255, 255, 255, 0.354);
+  font-family: "Comic Relief", system-ui;
+  font-weight: 400;
+  font-style: normal;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+}
+
+.Welcome-Page-Container button {
+  background-color: #3b82f6;
+  color: whitesmoke;
+  font-weight: bold;
+  font-size: 1rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  width: 10rem;
+  cursor: pointer;
+  margin-top: 3rem;
+}
+
+
+.top-navbar {
+  position: relative; /* Or fixed if you want it always visible */
+  top: 0;
+  width: 100%;
+  padding-top: 20px;
+  background-color: white;
+  z-index: 1000;
+  margin-bottom: 5rem;
+}
+
+.nav-link{
+  color: black !important;
+  transition: transform 0.35s ease-in-out, color 0.3s ease !important;
+  text-decoration: none !important;
+}
+
+.nav-link:hover{
+  color: #3f51b5 !important;
+  transform: scale(1.1) !important;
+}
+
+.registration-page{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.registration-page-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #3b83f6d3;
+  width: 40%;
+  height: 80%;
+  margin-top: 2rem;
+  border-radius: 1.5rem;
+  border: #3f51b5;
+  box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.62);
+}
+
+.registration-page-container input{
+  margin-bottom: 1.5rem;
+  text-align: center;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+  width: 40%;
+  height: 2.2rem;
+}
+
+.registration-page-container a{
+  text-decoration: none;
+  color: #01071142;
+  margin-top: 1.5rem;
+  transition: transform 0.35s ease-in-out, color 0.3s ease !important;
+}
+
+.registration-page-container a:hover{
+  text-decoration: underline;
+
+  transform: scale(1.1) !important;
+}
+
+.registration-page-container button{
+  background-color: bisque;
+  width: 32%;
+  border-radius: 0.6rem;
+  margin-top: 1.5rem;
+}
+
+.login-page{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  
+
+}
+
+.login-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #8f9092;
+  width: 35%;
+  height: 70%;
+  margin-top: 2rem;
+  border-radius: 1.5rem;
+  border: #3f51b5;
+  box-shadow: 0px 10px 10px rgba(0, 0, 0, 0.62);
+  
+
+}
+
+.login-container input{
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+
+  
+
+}
+
+.login-container button{
+  border-radius: 0.6rem;
+  width: 32%;
+  margin-top: 1.5rem;
+  
+
+}
+
+.login-container a{
+  text-decoration: none;
+  color: #f8f8f8e9;
+  margin-top: 1.5rem;
+  transition: transform 0.35s ease-in-out, color 0.3s ease !important;
+  font-weight: 600;
+}
+
+.login-container a:hover{
+  text-decoration: underline;
+
+  transform: scale(1.1) !important;
+}
+
+
+
+
+
+
+
+
+
+

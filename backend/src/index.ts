@@ -1,9 +1,17 @@
+import dotenv from 'dotenv';
+dotenv.config({ path: './backend/src/.env' });
+
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
 
+import mongoose from "mongoose";
+import authRoutes from './routes/auth.ts'
+
+
 const app = express();
+app.use(express.json());
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: {
@@ -34,6 +42,17 @@ const privateChats = new Map<PrivateChatKey, string>();
 
 app.use(cors());
 app.use(express.json());
+app.use('/auth', authRoutes)
+
+const mongoUri = process.env.MONGO_URI;
+if (!mongoUri) {
+  throw new Error("🚨 MONGO_URI is not defined in your .env file");
+}
+
+mongoose.connect(mongoUri)
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch((err) => console.error('❌ MongoDB connection error:', err));
+
 
 
 

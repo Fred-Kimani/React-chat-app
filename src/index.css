@@ -153,6 +153,7 @@ body{
 .login-container input{
   border-radius: 0.5rem;
   margin-bottom: 2rem;
+  text-align: center;
 
   
 
@@ -176,6 +177,7 @@ body{
 
 .login-container a:hover{
   text-decoration: underline;
+  cursor: pointer;
 
   transform: scale(1.1) !important;
 }

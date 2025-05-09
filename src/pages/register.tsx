@@ -1,8 +1,10 @@
 import React, { JSX, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import {toast, ToastContainer } from 'react-toastify';
 
 const RegisterPage = (): JSX.Element =>{
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -28,14 +30,51 @@ const RegisterPage = (): JSX.Element =>{
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // You can handle the registration logic here (API call)
-    // Assuming registration is successful, navigate to the login page
-    navigate('/login');
+    setIsSubmitting(true); // Disable submit button
+    try {
+      // Send a POST request to the backend
+      const response = await fetch('http://localhost:3001/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+      
+      if (response.ok) {
+        // Registration was successful, navigate to login page
+        console.log('Registration successful', data);
+              // Display a success toast
+              toast.success(data.message, {
+                position: "top-right",  // Corrected position string
+              });
+
+      // Redirect to login after a short delay to let the user see the success message
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000); // 2-second delay
+        navigate('/login');
+      } else {
+        // Handle errors (e.g., display error messages)
+        console.error('Registration failed:', data.error || data.message);
+        toast.error(data.error || data.message, {
+          position: "top-right",  // Corrected position string
+        });
+      }
+    } catch (error) {
+      console.error('Error during registration:', error);
+      alert('There was an error during registration.');
+    }
+    finally {
+      setIsSubmitting(false); // Re-enable submit button
+    }
   };
 
-    const navigateToLogin = (): void =>{
-        navigate('/login')
-    }
+    //const navigateToLogin = (): void =>{
+    //    navigate('/login')
+   // }
 
     return(
         <div className="registration-page">
@@ -67,7 +106,7 @@ const RegisterPage = (): JSX.Element =>{
 
 
 
-            <button type="submit">Register</button>
+            <button type="submit" disabled={isSubmitting}>Register</button>
 
             <a className = "login-link" href="/login">Already have an account? Login</a>
 

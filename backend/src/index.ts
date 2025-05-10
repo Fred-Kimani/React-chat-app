@@ -9,6 +9,7 @@ import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import User from "./Models/User.ts";
 const JWT_SECRET = process.env.JWT_SECRET!;
+import Message from './Models/Message.ts';
 
 
 import mongoose from "mongoose";
@@ -60,6 +61,7 @@ mongoose.connect(mongoUri)
 
 
 io.on('connection', (socket) => {
+  const groups = new Map<string, { name: string; createdBy: string }>();
   console.log(`⚡ ${socket.id} connected`);
 
   // === Join a public room ===
@@ -68,6 +70,8 @@ io.on('connection', (socket) => {
     console.log(`${username} joined group ${roomId}`);
     socket.to(roomId).emit('system-message', `${username} joined the group`);
   });
+
+
 
   // === Private 1-to-1 room logic ===
   socket.on('start-private-chat', ({ userA, userB }) => {
@@ -84,9 +88,43 @@ io.on('connection', (socket) => {
   });
 
   // === Handle chat messages ===
-  socket.on('send-message', (message: Message) => {
+  socket.on('send-message', async(message: Message) => {
+    try {
+      const savedMessage = await Message.create({
+        sender: message.sender,
+        content: message.content,
+        roomId: message.roomId
+      });
+      io.to(message.roomId).emit('receive-message', {
+        ...message,
+        _id:savedMessage._id,
+        createdAt:savedMessage.createdAt
+      });
+      
+    } catch (error) {
+      console.error('❌ Error saving message:', error);
+    }
     console.log('Message to', message.roomId, ':', message.content);
-    io.to(message.roomId).emit('receive-message', message);
+  });
+
+  socket.on('create-group', ({ groupName, username }) => {
+    const groupId = `group_${Date.now()}`;
+    groups.set(groupId, { name: groupName, createdBy: username });
+
+    // Optionally auto-join the creator to the group
+    socket.join(groupId);
+    socket.emit('group-created', { groupId, groupName });
+    io.emit('new-group', { groupId, groupName, createdBy: username }); // notify all users
+  });
+
+  // You can also emit the current list of groups if needed
+  socket.on('get-groups', () => {
+    const groupList = Array.from(groups.entries()).map(([id, info]) => ({
+      groupId: id,
+      groupName: info.name,
+      createdBy: info.createdBy,
+    }));
+    socket.emit('group-list', groupList);
   });
 
   socket.on('disconnect', () => {

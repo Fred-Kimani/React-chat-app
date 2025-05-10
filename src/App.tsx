@@ -54,6 +54,8 @@ const App: React.FC =() => {
       }
       /> }
 
+      
+
       {/* <Route 
       path = '/register'
       element={isLoggedIn ? <ListofChats /> : <Navigate to = "/" />}

@@ -13,7 +13,8 @@ import ListOfChats from './pages/listOfChats'
 import PublicRoute from './pages/publicRoutes'
 import PrivateRoute from './pages/privateRoutes'
 //import privateChat from './pages/privateChat'
-//import groupChat from './pages/groupChat'
+import GroupChat from './pages/groupChat'
+import GroupChatWrapper from './pages/groupChatWrapper'
 
 
 
@@ -45,14 +46,22 @@ const App: React.FC =() => {
       /> 
 
 
-      { <Route 
+       <Route 
       path = '/mychats'
       element={
         <PrivateRoute>
         <ListOfChats />
       </PrivateRoute>
       }
-      /> }
+      /> 
+
+      <Route path='/group/:roomId'
+      element={
+        <PrivateRoute>
+          <GroupChatWrapper />
+        </PrivateRoute>
+      }
+      />
 
       
 

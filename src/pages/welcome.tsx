@@ -12,7 +12,7 @@ const WelcomePage = () : JSX.Element =>{
     const navigate = useNavigate();
 
     const handleLoginClick = ():void =>{
-        navigate('/register');
+        navigate('/login');
     }
 
     const[isLoggedIn, setIsLoggedIn] = useState<boolean>(false);

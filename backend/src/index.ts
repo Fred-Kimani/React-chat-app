@@ -10,6 +10,7 @@ import jwt from 'jsonwebtoken';
 import User from "./Models/User.ts";
 const JWT_SECRET = process.env.JWT_SECRET!;
 import Message from './Models/Message.ts';
+import ChatRoom from './Models/ChatRoom.ts';
 
 
 import mongoose from "mongoose";
@@ -218,7 +219,7 @@ app.post('/login', async(req:express.Request, res:express.Response)=>{
       message: 'Login successful.',
       token,
       user: {
-        id: user._id,
+        _id: user._id,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
@@ -229,6 +230,59 @@ app.post('/login', async(req:express.Request, res:express.Response)=>{
     res.status(500).json({ message: 'Internal server error.' });
   }
 })
+
+// POST /chatrooms/create-group
+app.post('/chatrooms/create-group', async (req:express.Request, res: express.Response) => {
+  const { name } = req.body;
+
+  const existingRoom = await ChatRoom.findOne({ name, isPrivate: false });
+  if (existingRoom) return res.status(400).json({ message: 'Group already exists' });
+
+  const newRoom = new ChatRoom({ name, isPrivate: false });
+  await newRoom.save();
+
+  res.status(201).json(newRoom);
+});
+
+app.get('/chatrooms', async (req, res) => {
+  const rooms = await ChatRoom.find({ isPrivate: false });
+  res.json(rooms);
+});
+
+// GET /messages/:roomId
+app.get('/messages/:roomId', async (req, res) => {
+  const { roomId } = req.params;
+
+  try {
+    const messages = await Message.find({ roomId })
+      .populate('sender', 'email') // Optional: include sender info
+      .sort({ createdAt: 1 });     // Optional: sort oldest → newest
+
+    res.json(messages);
+  } catch (err) {
+    console.error('❌ Failed to fetch messages', err);
+    res.status(500).json({ error: 'Failed to fetch messages' });
+  }
+});
+
+
+app.post('/messages', async (req, res) => {
+  const { sender, roomId, content } = req.body;
+
+  try {
+    const message = new Message({ sender, roomId, content });
+    await message.save();
+    res.status(201).json(message);
+  } catch (err) {
+    res.status(500).json({ error: 'Message not saved' });
+  }
+});
+
+/*app.get('/direct-message', async (req, res)=>{
+  const dm = await ChatRoom.find({isPrivate: true, })
+
+}) */
+
 
 
 

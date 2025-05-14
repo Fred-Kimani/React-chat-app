@@ -2,6 +2,7 @@ import { JSX, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../useAuth";
 import CreateGroup from "./createGroup";
+import GroupChat from "./groupChat";
 
 interface ChatRoom {
   _id: string;
@@ -10,18 +11,14 @@ interface ChatRoom {
 }
 
 const ListOfChats = (): JSX.Element => {
-
   const [email, setEmail] = useState('');
-
   const [showCreateGroup, setShowCreateGroup] = useState(false);
-
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
 
   const navigate = useNavigate();
-
   const { logout, user } = useAuth();
 
-  // Load user email from localStorage
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -30,7 +27,6 @@ const ListOfChats = (): JSX.Element => {
     }
   }, []);
 
-  // Load chatrooms from server
   const fetchRooms = async () => {
     try {
       const res = await fetch('http://localhost:3001/chatrooms');
@@ -50,10 +46,6 @@ const ListOfChats = (): JSX.Element => {
     navigate('/login');
   };
 
-  const handleJoin = (roomId: string) => {
-    navigate(`/group/${roomId}`);
-  };
-
   return (
     <>
       <h1>Welcome, {user?.email}</h1>
@@ -68,26 +60,33 @@ const ListOfChats = (): JSX.Element => {
         {showCreateGroup ? 'Cancel' : 'Create Group'}
       </button>
 
-      {showCreateGroup && (
-        <CreateGroup onGroupCreated={fetchRooms} />
-      )}
-
-      
+      {showCreateGroup && <CreateGroup onGroupCreated={fetchRooms} />}
 
       <h2>Available Public Groups</h2>
       <ul>
         {chatRooms.map((room) => (
           <li key={room._id}>
             {room.name}
-            <button onClick={() => handleJoin(room._id)} style={{ marginLeft: '1rem' }}>
-              Join
+            <button onClick={() => setSelectedRoom(room._id)} style={{ marginLeft: '1rem' }}>
+              Chat
             </button>
           </li>
         ))}
       </ul>
+
+      <hr />
+
+      {selectedRoom ? (
+        <GroupChat roomId={selectedRoom} />
+      ) : (
+        <p>Select a group to start chatting.</p>
+      )}
     </>
   );
 };
 
 export default ListOfChats;
+
+
+
 

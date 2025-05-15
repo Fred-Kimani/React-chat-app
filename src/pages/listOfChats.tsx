@@ -14,7 +14,7 @@ const ListOfChats = (): JSX.Element => {
   const [email, setEmail] = useState('');
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
-  const [selectedRoom, setSelectedRoom] = useState<string | null>(null);
+  const [selectedRoom, setSelectedRoom] = useState<{ roomId: string; name: string } | null>(null);
 
   const navigate = useNavigate();
   const { logout, user } = useAuth();
@@ -47,41 +47,48 @@ const ListOfChats = (): JSX.Element => {
   };
 
   return (
-    <>
-      <h1>Welcome, {user?.email}</h1>
+    <div className="chat-main-container">
 
-      <button onClick={handleLogout} style={{ marginTop: '1rem' }}>
+     <div className="listed-groups-container">
+     <h2>Welcome, {user?.email}</h2>
+     <button onClick={handleLogout} style={{ marginTop: '1rem' }}>
         Logout
       </button>
 
       <br /><br />
 
+      <h3>Available Groups</h3>
+
       <button onClick={() => setShowCreateGroup(!showCreateGroup)}>
         {showCreateGroup ? 'Cancel' : 'Create Group'}
       </button>
 
-      {showCreateGroup && <CreateGroup onGroupCreated={fetchRooms} />}
+      {showCreateGroup && <CreateGroup onGroupCreated={fetchRooms} setSelectedRoom={setSelectedRoom} />}
 
-      <h2>Available Public Groups</h2>
-      <ul>
+      <ul className="list-of-groups">
         {chatRooms.map((room) => (
           <li key={room._id}>
             {room.name}
-            <button onClick={() => setSelectedRoom(room._id)} style={{ marginLeft: '1rem' }}>
+            <button onClick={() => setSelectedRoom({roomId:room._id, name:room.name})} style={{ marginLeft: '1rem' }}>
               Chat
             </button>
           </li>
         ))}
       </ul>
-
+      </div>
       <hr />
 
+      <div className="chatroom-container">
+
       {selectedRoom ? (
-        <GroupChat roomId={selectedRoom} />
+        <GroupChat roomId={selectedRoom.roomId} name={selectedRoom.name} />
       ) : (
         <p>Select a group to start chatting.</p>
       )}
-    </>
+      </div>
+
+      
+    </div>
   );
 };
 

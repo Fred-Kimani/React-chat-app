@@ -112,13 +112,12 @@ io.on('connection', (socket) => {
     const groupId = `group_${Date.now()}`;
     groups.set(groupId, { name: groupName, createdBy: username });
 
-    // Optionally auto-join the creator to the group
+
     socket.join(groupId);
     socket.emit('group-created', { groupId, groupName });
-    io.emit('new-group', { groupId, groupName, createdBy: username }); // notify all users
+    io.emit('new-group', { groupId, groupName, createdBy: username }); 
   });
 
-  // You can also emit the current list of groups if needed
   socket.on('get-groups', () => {
     const groupList = Array.from(groups.entries()).map(([id, info]) => ({
       groupId: id,

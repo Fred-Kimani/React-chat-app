@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+//import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../useAuth';
 
-type Props = {
-  onGroupCreated: () => void; // 👈 This is necessary
-};
 
-const CreateGroup: React.FC<Props> = ({ onGroupCreated }) => {
+
+interface CreateGroupProps {
+  onGroupCreated: () => void;
+  setSelectedRoom: (room: { roomId: string; name: string }) => void;
+}
+
+const CreateGroup: React.FC<CreateGroupProps> = ({ onGroupCreated, setSelectedRoom}) => {
   const [groupName, setGroupName] = useState('');
   const { user } = useAuth();
-  const navigate = useNavigate();
+ // const navigate = useNavigate();
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +32,7 @@ const CreateGroup: React.FC<Props> = ({ onGroupCreated }) => {
 
       const data = await res.json();
       onGroupCreated(); // refresh the group list
-      navigate(`/group/${data._id}`); // redirect to new group chat
+      setSelectedRoom({ roomId: data._id, name: groupName });
     } catch (err) {
       console.error("Group creation failed", err);
     }

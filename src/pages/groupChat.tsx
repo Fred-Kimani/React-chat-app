@@ -1,8 +1,8 @@
-import React, {JSX, useEffect, useState} from 'react'
+import /*React,*/ {JSX, useEffect, useState} from 'react'
 import socket from '/Users/turnbull_f/Desktop/react-apps/chat-app/backend/src/socket.ts'
 import { useAuth } from '../useAuth';
 
-const GroupChat = ({roomId}:{roomId: string}): JSX.Element => {
+const GroupChat = ({roomId, name}:{roomId: string, name:string}): JSX.Element => {
   const { user } = useAuth();
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState('');
@@ -36,7 +36,7 @@ const GroupChat = ({roomId}:{roomId: string}): JSX.Element => {
     });
 
     socket.on('receive-message', (msg) => {
-      setMessages((prev) => [...prev, `${msg.sender}: ${msg.content}`]);
+      setMessages((prev) => [...prev, `${msg.senderName}: ${msg.content}`]);
     });
 
     return () => {
@@ -50,6 +50,7 @@ const GroupChat = ({roomId}:{roomId: string}): JSX.Element => {
 
     socket.emit('send-message', {
       sender: user._id,
+      senderName: user.email,
       content: input,
       roomId,
     });
@@ -57,8 +58,9 @@ const GroupChat = ({roomId}:{roomId: string}): JSX.Element => {
   };
 
   return (
-    <div>
-      <ul>
+    <div className='group-chat-container'>
+      <h2>{name}</h2>
+      <ul style={{listStyleType:'none'}}>
         {messages.map((msg, idx) => (
           <li key={idx}>{msg}</li>
         ))}

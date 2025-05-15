@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Comic+Relief:wght@400;700&display=swap');
 
 
-@tailwind base;
+/*@tailwind base;
 @tailwind components;
-@tailwind utilities;
+@tailwind utilities;*/
 
 html{
   height: 100%;
@@ -180,6 +180,105 @@ body{
   cursor: pointer;
 
   transform: scale(1.1) !important;
+}
+
+
+.chat-main-container {
+  display: flex;
+  margin: 1.5rem;
+  flex-direction: row;
+  gap: 2rem;
+}
+
+.listed-groups-container {
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  background-color: #f4f4f4;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.listed-groups-container h2,
+.listed-groups-container h3 {
+  margin-bottom: 1rem;
+}
+
+.listed-groups-container ul {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.listed-groups-container li {
+  margin-bottom: 0.8rem;
+  padding: 0.5rem;
+  background-color: #ffffff;
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.listed-groups-container button {
+  margin-left: auto;
+  padding: 0.3rem 0.6rem;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.chatroom-container {
+  flex-grow: 1;
+  background-color: #ffffff;
+  padding: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.group-chat-container h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.group-chat-container ul {
+  list-style-type: none;
+  padding-left: 0;
+  overflow-y: auto;
+  max-height: 60vh;
+  margin-bottom: 1rem;
+}
+
+.group-chat-container li {
+  margin-bottom: 0.5rem;
+  padding: 0.6rem;
+  border-radius: 10px;
+  max-width: 70%;
+  word-wrap: break-word;
+  background-color: #e2f0ff;
+}
+
+.group-chat-container input {
+  padding: 0.5rem;
+  width: 80%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-right: 0.5rem;
+}
+
+.group-chat-container button {
+  padding: 0.5rem 1rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 

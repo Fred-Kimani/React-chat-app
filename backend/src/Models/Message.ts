@@ -15,8 +15,13 @@ const messageSchema = new mongoose.Schema({
   content: {
     type: String,
     required: true
-  }
+  },
+  
 }, { timestamps: true });
+
+// Indexes
+messageSchema.index({ roomId: 1, createdAt: 1 }); // most important
+messageSchema.index({ sender: 1 });
 
 const Message = mongoose.model('Message', messageSchema);
 export default Message;

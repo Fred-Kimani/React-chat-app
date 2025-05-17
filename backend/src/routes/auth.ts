@@ -1,9 +1,10 @@
-// auth.ts (or auth.routes.ts depending on your naming convention)
+// auth.ts
 import express, {Request, Response} from "express";
 import bcrypt from "bcrypt";
 import jwt from 'jsonwebtoken';
 import User from "../Models/User.ts";
 const JWT_SECRET = process.env.JWT_SECRET!;
+// challenge: use oauth2 as well
 
 
 const router = express.Router(); // Initialize the express router

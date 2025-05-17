@@ -281,6 +281,43 @@ body{
   cursor: pointer;
 }
 
+li.group-name-container{
+  cursor: url('/chat-cursor.cur') 16 16, pointer !important;
+
+}
+
+.search-overlay {
+  position: fixed;
+  top: 60px; 
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.search-overlay ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.search-overlay li {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.search-overlay li:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+
+
+
 
 
 

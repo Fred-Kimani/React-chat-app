@@ -231,22 +231,81 @@ app.post('/login', async(req:express.Request, res:express.Response)=>{
 })
 
 // POST /chatrooms/create-group
-app.post('/chatrooms/create-group', async (req:express.Request, res: express.Response) => {
-  const { name } = req.body;
+app.post('/chatrooms/create-group', async (req, res) => {
+  const { name, isPrivate, userId, targetUserId } = req.body;
 
+  if (isPrivate && userId && targetUserId) {
+    // Sort user IDs to ensure consistent matching regardless of who initiated it
+    const participants = [userId, targetUserId].sort();
+
+    // Check if a private room between these users exists
+    const existingRoom = await ChatRoom.findOne({
+      isPrivate: true,
+      participants: { $all: participants, $size: 2 }
+    });
+
+    if (existingRoom) return res.status(200).json(existingRoom);
+
+    // Create private room
+    const newRoom = new ChatRoom({
+      name: targetUserId, // placeholder for now
+      isPrivate: true,
+      participants,
+    });
+
+    await newRoom.save();
+    return res.status(201).json(newRoom);
+  }
+
+  // Group chat logic
   const existingRoom = await ChatRoom.findOne({ name, isPrivate: false });
   if (existingRoom) return res.status(400).json({ message: 'Group already exists' });
 
-  const newRoom = new ChatRoom({ name, isPrivate: false });
-  await newRoom.save();
+  const newRoom = new ChatRoom({
+    name,
+    isPrivate,
+    createdBy: isPrivate ? undefined : userId,
+    admins: [userId],
+    allowedUsers: [userId],
+    someField: 'placeholder'
+  });
 
+  await newRoom.save();
   res.status(201).json(newRoom);
 });
 
+// GET all available chat rooms for a user
 app.get('/chatrooms', async (req, res) => {
-  const rooms = await ChatRoom.find({ isPrivate: false });
-  res.json(rooms);
+  const { userId } = req.query;
+
+  try {
+    const chatRooms = await ChatRoom.find({
+      $or: [
+        { isPrivate: false, isOpen: true },         // public and open rooms
+        { isPrivate: true, allowedUsers: userId }   // private rooms user is allowed in
+      ]
+    }).select('name isPrivate isOpen createdBy allowedUsers');
+
+    res.status(200).json(chatRooms);
+  } catch (err) {
+    console.error('Error fetching chat rooms:', err);
+    res.status(500).json({ error: 'Failed to fetch chat rooms' });
+  }
 });
+
+app.get('/private-chat/:roomId', async(req, res)=>{
+  const {roomId} = req.params;
+
+  try {
+    const messages = await Message.find({roomId})
+
+    
+  } catch (error) {
+    
+  }
+})
+
+
 
 // GET /messages/:roomId
 app.get('/messages/:roomId', async (req, res) => {
@@ -269,13 +328,52 @@ app.post('/messages', async (req, res) => {
   const { sender, roomId, content } = req.body;
 
   try {
+    // 1. Check room
+    const room = await ChatRoom.findById(roomId);
+    if (!room) {
+      return res.status(404).json({ error: 'Room not found' });
+    }
+
+    // 2. Auto-add to allowedUsers if conditions are met
+    const isPublicOpen = !room.isPrivate && room.isOpen;
+    const isNotInRoom = !room.allowedUsers.includes(sender);
+
+    if (isPublicOpen && isNotInRoom) {
+      room.allowedUsers.push(sender);
+      await room.save();
+    }
+
+    // 3. Save message
     const message = new Message({ sender, roomId, content });
     await message.save();
+
     res.status(201).json(message);
   } catch (err) {
+    console.error('Message save error:', err);
     res.status(500).json({ error: 'Message not saved' });
   }
 });
+
+app.get('/users/search', async(req, res)=>{
+  try {
+    const {email} = req.query;
+    if (!email || email.length < 4) {
+      return res.status(400).json({ message: 'Please provide at least 3 characters for search' });
+    }
+
+    const regex = new RegExp(email, 'i');
+    const users = await User.find({email: {$regex: regex}})
+    .select('_id email')
+    .limit(10);
+    res.json(users)
+    
+  } catch (error) {
+    console.error('Error searching users:', error);
+    res.status(500).json({ message: 'Server error' });
+    
+  }
+})
+
 
 /*app.get('/direct-message', async (req, res)=>{
   const dm = await ChatRoom.find({isPrivate: true, })
@@ -283,7 +381,7 @@ app.post('/messages', async (req, res) => {
 }) */
 
 
-
+ 
 
 httpServer.listen(3001, () => {
   console.log('Server listening on port 3001');

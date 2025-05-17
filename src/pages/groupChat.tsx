@@ -1,6 +1,7 @@
 import /*React,*/ {JSX, useEffect, useState} from 'react'
 import socket from '/Users/turnbull_f/Desktop/react-apps/chat-app/backend/src/socket.ts'
 import { useAuth } from '../useAuth';
+// chalenge: set up voice chat rooms
 
 const GroupChat = ({roomId, name}:{roomId: string, name:string}): JSX.Element => {
   const { user } = useAuth();

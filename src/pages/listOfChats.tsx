@@ -10,14 +10,73 @@ interface ChatRoom {
   isPrivate: boolean;
 }
 
+interface User{
+  _id: string,
+  email: string
+}
+
 const ListOfChats = (): JSX.Element => {
   const [email, setEmail] = useState('');
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<{ roomId: string; name: string } | null>(null);
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState<User[]>([]);
+  const [showOverlay, setShowOverlay] = useState(false);
+
   const navigate = useNavigate();
   const { logout, user } = useAuth();
+
+
+  useEffect(() => {
+    const delayDebounce = setTimeout(() => {
+      if (searchTerm.length >= 4) {
+        fetch(`http://localhost:3001/users/search?email=${searchTerm}`)
+          .then((res) => res.json())
+          .then((data) => setSearchResults(data))
+          .catch((err) => console.error(err));
+      } else {
+        setSearchResults([]);
+      }
+    }, 300); // debounce by 300ms
+  
+    return () => clearTimeout(delayDebounce);
+  }, [searchTerm]);
+
+
+  const handleUserClick = async (selectedUser: { _id: string; email: string }) => {
+    const loggedInUserId = user._id;
+    const otherUserId = selectedUser._id;
+  
+    // Generate a consistent room name (for backend querying or identification)
+    const participants = [user.email, selectedUser.email].sort();
+    const roomName = `${participants[0]}-${participants[1]}`;
+  
+    try {
+      const res = await fetch("http://localhost:3001/chatrooms/create-group", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: roomName, // Optional: can leave out if backend handles naming
+          isPrivate: true,
+          allowedUsers: [loggedInUserId, otherUserId],
+        }),
+      });
+  
+      const data = await res.json();
+      console.log(data)
+      navigate(`/chatroom/${data._id}`);
+  
+      setSelectedRoom({ roomId: data._id, name: selectedUser.email }); // Show chat with their name/email
+    } catch (err) {
+      console.error("Private chat creation failed", err);
+    }
+  };
+  
+  
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
@@ -57,6 +116,34 @@ const ListOfChats = (): JSX.Element => {
 
       <br /><br />
 
+      <div>
+      <input
+        type="text"
+        placeholder="Search users by email..."
+        value={searchTerm}
+        onChange={(e) => {
+          setSearchTerm(e.target.value);
+          setShowOverlay(e.target.value.length >= 4);
+        }}
+      />
+
+      {showOverlay && (
+        <div className="search-overlay" onClick={() => setShowOverlay(false)}>
+          <ul>
+            {searchResults.length > 0 ? (
+              searchResults.map(user => (
+                <li key={user._id} onClick={() => handleUserClick(user)}>
+                  {user.email}
+                </li>
+              ))
+            ) : (
+              <li>No users found</li>
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
+
       <h3>Available Groups</h3>
 
       <button onClick={() => setShowCreateGroup(!showCreateGroup)}>
@@ -67,11 +154,8 @@ const ListOfChats = (): JSX.Element => {
 
       <ul className="list-of-groups">
         {chatRooms.map((room) => (
-          <li key={room._id}>
+          <li key={room._id} className="group-name-container" onClick={() => setSelectedRoom({roomId:room._id, name:room.name})}>
             {room.name}
-            <button onClick={() => setSelectedRoom({roomId:room._id, name:room.name})} style={{ marginLeft: '1rem' }}>
-              Chat
-            </button>
           </li>
         ))}
       </ul>

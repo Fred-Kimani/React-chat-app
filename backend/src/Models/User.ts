@@ -27,5 +27,10 @@ const userSchema= new mongoose.Schema({
 
 }, {timestamps: true})
 
+// Indexes
+userSchema.index({ email: 1 }, { unique: true }); // fast email lookups
+userSchema.index({ username: "text", email: "text" }); // for text search bar
+
+
 const User = mongoose.model('User', userSchema)
 export default User;

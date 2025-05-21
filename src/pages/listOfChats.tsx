@@ -15,7 +15,11 @@ interface User{
   email: string
 }
 
-const ListOfChats = (): JSX.Element => {
+interface startPrivateChat {
+  onChatCreated: () => void;
+}
+
+const ListOfChats: React.FC<startPrivateChat> = ({ onChatCreated}) => {
   const [email, setEmail] = useState('');
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
@@ -32,7 +36,7 @@ const ListOfChats = (): JSX.Element => {
   useEffect(() => {
     const delayDebounce = setTimeout(() => {
       if (searchTerm.length >= 4) {
-        fetch(`http://localhost:3001/users/search?email=${searchTerm}`)
+        fetch(`http://localhost:3001/users/search?email=${searchTerm}&requesterId=${user._id}`)
           .then((res) => res.json())
           .then((data) => setSearchResults(data))
           .catch((err) => console.error(err));
@@ -46,31 +50,38 @@ const ListOfChats = (): JSX.Element => {
 
 
   const handleUserClick = async (selectedUser: { _id: string; email: string }) => {
+    if (!user) {
+      console.log('User is undefined or null!');
+      return;
+    }
+    console.log('User is defined:', user);
     const loggedInUserId = user._id;
     const otherUserId = selectedUser._id;
-  
-    // Generate a consistent room name (for backend querying or identification)
+    console.log('The 2 users are current: ',loggedInUserId, 'The other user: ',otherUserId);
+
+    //For the group name
     const participants = [user.email, selectedUser.email].sort();
-    const roomName = `${participants[0]}-${participants[1]}`;
+    const roomName = `${participants[0]}--${participants[1]}`;
   
     try {
-      const res = await fetch("http://localhost:3001/chatrooms/create-group", {
+      console.log('loggedInUserId:', loggedInUserId, 'otherUserId:', otherUserId);
+      const res = await fetch("http://localhost:3001/chatrooms/create-private", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: roomName, // Optional: can leave out if backend handles naming
+          name: roomName, 
           isPrivate: true,
-          allowedUsers: [loggedInUserId, otherUserId],
+          isOpen: false,
+          userId1: loggedInUserId,
+          userId2: otherUserId,
         }),
       });
   
       const data = await res.json();
       console.log(data)
-      navigate(`/chatroom/${data._id}`);
-  
-      setSelectedRoom({ roomId: data._id, name: selectedUser.email }); // Show chat with their name/email
+      setSelectedRoom({ roomId: data._id, name: roomName });
     } catch (err) {
       console.error("Private chat creation failed", err);
     }
@@ -86,9 +97,9 @@ const ListOfChats = (): JSX.Element => {
     }
   }, []);
 
-  const fetchRooms = async () => {
+  const fetchRooms = async ():Promise<void> => {
     try {
-      const res = await fetch('http://localhost:3001/chatrooms');
+      const res = await fetch(`http://localhost:3001/chatrooms?userId=${user._id}`);
       const data = await res.json();
       setChatRooms(data);
     } catch (error) {
@@ -127,21 +138,30 @@ const ListOfChats = (): JSX.Element => {
         }}
       />
 
-      {showOverlay && (
-        <div className="search-overlay" onClick={() => setShowOverlay(false)}>
-          <ul>
-            {searchResults.length > 0 ? (
-              searchResults.map(user => (
-                <li key={user._id} onClick={() => handleUserClick(user)}>
-                  {user.email}
-                </li>
-              ))
-            ) : (
-              <li>No users found</li>
-            )}
-          </ul>
-        </div>
+{showOverlay && (
+  <div className="search-overlay" onClick={() => setShowOverlay(false)}>
+    <ul>
+      {searchResults.length > 0 ? (
+        searchResults.map(user => (
+          <li
+            key={user._id}
+            onClick={(e) => {
+              e.stopPropagation(); // prevent overlay from closing before click
+              console.log('I have been clicked:', user);
+              handleUserClick(user);
+              
+            }}
+          >
+            {user.email}
+          </li>
+        ))
+      ) : (
+        <li>No users found</li>
       )}
+    </ul>
+  </div>
+)}
+
     </div>
 
       <h3>Available Groups</h3>

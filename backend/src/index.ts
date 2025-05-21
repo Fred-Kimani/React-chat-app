@@ -239,10 +239,12 @@ app.post('/chatrooms/create-group', async (req, res) => {
     const participants = [userId, targetUserId].sort();
 
     // Check if a private room between these users exists
-    const existingRoom = await ChatRoom.findOne({
-      isPrivate: true,
-      participants: { $all: participants, $size: 2 }
-    });
+    const existingRoom = await ChatRoom.find({
+      $or: [
+        { isPrivate: false, isOpen: true },         // public and open rooms
+        { isPrivate: true, allowedUsers: userId }   // private rooms user is allowed in
+      ]
+    }).select('name isPrivate isOpen createdBy allowedUsers');
 
     if (existingRoom) return res.status(200).json(existingRoom);
 
@@ -274,15 +276,61 @@ app.post('/chatrooms/create-group', async (req, res) => {
   res.status(201).json(newRoom);
 });
 
+// POST /chatrooms/create-private
+app.post('/chatrooms/create-private', async (req, res) => {
+  try {
+    console.log('Request body:', req.body); 
+    const { userId1, userId2, name } = req.body;
+
+    if (!userId1 || !userId2) {
+      return res.status(400).json({ message: 'Both user IDs are required' });
+    }
+
+    // Check if private chat already exists between the two
+    const existing = await ChatRoom.findOne({
+      isPrivate: true,
+      allowedUsers: { $all: [userId1, userId2], $size: 2 }
+    });
+
+    if (existing) {
+      return res.status(200).json(existing);
+    }
+
+    const newRoom = new ChatRoom({
+      name:name,
+      isPrivate: true,
+      isOpen: false,
+      allowedUsers: [userId1, userId2],
+      someField: 'private'
+    });
+
+    await newRoom.save();
+    res.status(201).json(newRoom);
+  } catch (err) {
+    console.error('Error creating private room:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
 // GET all available chat rooms for a user
 app.get('/chatrooms', async (req, res) => {
   const { userId } = req.query;
+  console.log('Received userId:', userId);
 
   try {
+    if (!userId || typeof userId !== 'string' || userId.length !== 24) {
+      console.log('Invalid userId '+userId)
+      return res.status(400).json({ error: 'Invalid userId' });
+    }
+    const objectUserId = new mongoose.Types.ObjectId(userId);
+    console.log('in object for '+objectUserId)
+
     const chatRooms = await ChatRoom.find({
       $or: [
         { isPrivate: false, isOpen: true },         // public and open rooms
-        { isPrivate: true, allowedUsers: userId }   // private rooms user is allowed in
+        { isPrivate: true, allowedUsers: { $in: [objectUserId] } }  // private rooms user is allowed in
       ]
     }).select('name isPrivate isOpen createdBy allowedUsers');
 
@@ -313,8 +361,8 @@ app.get('/messages/:roomId', async (req, res) => {
 
   try {
     const messages = await Message.find({ roomId })
-      .populate('sender', 'email') // Optional: include sender info
-      .sort({ createdAt: 1 });     // Optional: sort oldest → newest
+      .populate('sender', 'email') 
+      .sort({ createdAt: 1 });     
 
     res.json(messages);
   } catch (err) {
@@ -354,25 +402,33 @@ app.post('/messages', async (req, res) => {
   }
 });
 
-app.get('/users/search', async(req, res)=>{
+app.get('/users/search', async (req, res) => {
   try {
-    const {email} = req.query;
-    if (!email || email.length < 4) {
+    const { email, requesterId } = req.query;
+
+    if (!email || email.length < 3) {
       return res.status(400).json({ message: 'Please provide at least 3 characters for search' });
     }
 
+    if (!requesterId || !mongoose.Types.ObjectId.isValid(requesterId)) {
+      return res.status(400).json({ message: 'Valid requester ID required' });
+    }
+
     const regex = new RegExp(email, 'i');
-    const users = await User.find({email: {$regex: regex}})
+    const requesterObjectId = new mongoose.Types.ObjectId(requesterId);
+
+    const users = await User.find({
+      email: { $regex: regex },
+      _id: { $ne: requesterObjectId }  // exclude self
+    })
     .select('_id email')
     .limit(10);
-    res.json(users)
-    
+    res.json(users);
   } catch (error) {
     console.error('Error searching users:', error);
     res.status(500).json({ message: 'Server error' });
-    
   }
-})
+});
 
 
 /*app.get('/direct-message', async (req, res)=>{

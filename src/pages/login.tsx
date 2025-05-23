@@ -84,7 +84,7 @@ const LoginPage = ():JSX.Element =>{
                 <input type="text" placeholder="Email" name="email" onChange={handleChange} value={formData.email}/>
 
                 <label >Password</label>
-                <input type="text" placeholder="Password" name="password" onChange={handleChange} value={formData.password} />
+                <input type="password" placeholder="Password" name="password" onChange={handleChange} value={formData.password} />
                 <button type="submit" disabled={isSubmitting} >Login</button>
                 <a onClick={navigateBackToRegister}>Don't have an account yet? Back to registration</a>
                 <a href="">Forgot password ? Steps to reset</a>

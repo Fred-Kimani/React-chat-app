@@ -11,6 +11,7 @@ import User from "./Models/User.ts";
 const JWT_SECRET = process.env.JWT_SECRET!;
 import Message from './Models/Message.ts';
 import ChatRoom from './Models/ChatRoom.ts';
+import type { Request, Response } from 'express';
 
 
 import mongoose from "mongoose";
@@ -133,27 +134,30 @@ io.on('connection', (socket) => {
 });
 
 //Register user
-app.post("/register", async (req: express.Request, res: express.Response) => {
+app.post("/register", async (req: Request, res: Response) => {
   const { email, firstName, lastName, password, confirmPassword } = req.body;
 
   try {
     // Check if all fields are provided
     if (!email || !firstName || !lastName || !password || !confirmPassword) {
       console.log('Error: Missing required fields');
-      return res.status(400).json({ error: 'All fields are required.' });
+      res.status(400).json({ error: 'All fields are required.' });
+      return;
     }
 
     // Check if passwords match
     if (password !== confirmPassword) {
       console.log('Error: Passwords do not match');
-      return res.status(400).json({ error: 'Passwords do not match.' });
+      res.status(400).json({ error: 'Passwords do not match.' });
+      return;
     }
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       console.log(`Error: User with email ${email} already exists`);
-      return res.status(400).json({ message: 'A user with this email already exists' });
+      res.status(400).json({ message: 'A user with this email already exists' });
+      return
     }
 
     // Hash the password and create the user
@@ -187,24 +191,27 @@ app.post("/register", async (req: express.Request, res: express.Response) => {
   } catch (error) {
     // Log error and send internal server error response
     console.error('Internal server error:', error);
-    return res.status(500).json({ message: 'Internal server error' });
+     res.status(500).json({ message: 'Internal server error' });
+     return;
   }
 
 });
 
-app.post('/login', async(req:express.Request, res:express.Response)=>{
+app.post('/login', async(req:Request, res:Response)=>{
   const {email, password} = req.body
   try {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password.' });
+       res.status(401).json({ message: 'Invalid email or password.' });
+       return;
     }
 
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
-      return res.status(401).json({ message: 'Invalid email or password.' });
+       res.status(401).json({ message: 'Invalid email or password.' });
+       return;
     }
 
     // Create JWT
@@ -231,7 +238,7 @@ app.post('/login', async(req:express.Request, res:express.Response)=>{
 })
 
 // POST /chatrooms/create-group
-app.post('/chatrooms/create-group', async (req, res) => {
+app.post('/chatrooms/create-group', async (req:Request, res:Response) => {
   const { name, isPrivate, userId, targetUserId } = req.body;
 
   if (isPrivate && userId && targetUserId) {
@@ -246,7 +253,11 @@ app.post('/chatrooms/create-group', async (req, res) => {
       ]
     }).select('name isPrivate isOpen createdBy allowedUsers');
 
-    if (existingRoom) return res.status(200).json(existingRoom);
+    if (existingRoom){
+      res.status(200).json(existingRoom);
+      return;
+
+    } 
 
     // Create private room
     const newRoom = new ChatRoom({
@@ -256,12 +267,16 @@ app.post('/chatrooms/create-group', async (req, res) => {
     });
 
     await newRoom.save();
-    return res.status(201).json(newRoom);
+    res.status(201).json(newRoom);
+    return;
   }
 
   // Group chat logic
   const existingRoom = await ChatRoom.findOne({ name, isPrivate: false });
-  if (existingRoom) return res.status(400).json({ message: 'Group already exists' });
+  if (existingRoom){
+    res.status(400).json({ message: 'Group already exists' });
+    return;
+  } 
 
   const newRoom = new ChatRoom({
     name,
@@ -277,13 +292,14 @@ app.post('/chatrooms/create-group', async (req, res) => {
 });
 
 // POST /chatrooms/create-private
-app.post('/chatrooms/create-private', async (req, res) => {
+app.post('/chatrooms/create-private', async (req:Request, res:Response) => {
   try {
     console.log('Request body:', req.body); 
     const { userId1, userId2, name } = req.body;
 
     if (!userId1 || !userId2) {
-      return res.status(400).json({ message: 'Both user IDs are required' });
+      res.status(400).json({ message: 'Both user IDs are required' });
+      return;
     }
 
     // Check if private chat already exists between the two
@@ -293,7 +309,8 @@ app.post('/chatrooms/create-private', async (req, res) => {
     });
 
     if (existing) {
-      return res.status(200).json(existing);
+       res.status(200).json(existing);
+       return;
     }
 
     const newRoom = new ChatRoom({
@@ -315,14 +332,15 @@ app.post('/chatrooms/create-private', async (req, res) => {
 
 
 // GET all available chat rooms for a user
-app.get('/chatrooms', async (req, res) => {
+app.get('/chatrooms', async (req: Request, res: Response) => {
   const { userId } = req.query;
   console.log('Received userId:', userId);
 
   try {
     if (!userId || typeof userId !== 'string' || userId.length !== 24) {
       console.log('Invalid userId '+userId)
-      return res.status(400).json({ error: 'Invalid userId' });
+       res.status(400).json({ error: 'Invalid userId' });
+       return;
     }
     const objectUserId = new mongoose.Types.ObjectId(userId);
     console.log('in object for '+objectUserId)
@@ -341,22 +359,10 @@ app.get('/chatrooms', async (req, res) => {
   }
 });
 
-app.get('/private-chat/:roomId', async(req, res)=>{
-  const {roomId} = req.params;
-
-  try {
-    const messages = await Message.find({roomId})
-
-    
-  } catch (error) {
-    
-  }
-})
-
 
 
 // GET /messages/:roomId
-app.get('/messages/:roomId', async (req, res) => {
+app.get('/messages/:roomId', async (req:Request, res:Response) => {
   const { roomId } = req.params;
 
   try {
@@ -372,14 +378,15 @@ app.get('/messages/:roomId', async (req, res) => {
 });
 
 
-app.post('/messages', async (req, res) => {
+app.post('/messages', async (req:Request, res:Response) => {
   const { sender, roomId, content } = req.body;
 
   try {
     // 1. Check room
     const room = await ChatRoom.findById(roomId);
     if (!room) {
-      return res.status(404).json({ error: 'Room not found' });
+      res.status(404).json({ error: 'Room not found' });
+      return;
     }
 
     // 2. Auto-add to allowedUsers if conditions are met
@@ -402,16 +409,20 @@ app.post('/messages', async (req, res) => {
   }
 });
 
-app.get('/users/search', async (req, res) => {
+app.get('/users/search', async (req: Request, res: Response) => {
   try {
     const { email, requesterId } = req.query;
 
-    if (!email || email.length < 3) {
-      return res.status(400).json({ message: 'Please provide at least 3 characters for search' });
+    // Narrow email to string
+    if (typeof email !== 'string' || email.length < 3) {
+      res.status(400).json({ message: 'Please provide at least 3 characters for search' });
+      return;
     }
 
-    if (!requesterId || !mongoose.Types.ObjectId.isValid(requesterId)) {
-      return res.status(400).json({ message: 'Valid requester ID required' });
+    // Validate requesterId also as string
+    if (typeof requesterId !== 'string' || !mongoose.Types.ObjectId.isValid(requesterId)) {
+      res.status(400).json({ message: 'Valid requester ID required' });
+      return;
     }
 
     const regex = new RegExp(email, 'i');
@@ -419,16 +430,41 @@ app.get('/users/search', async (req, res) => {
 
     const users = await User.find({
       email: { $regex: regex },
-      _id: { $ne: requesterObjectId }  // exclude self
+      _id: { $ne: requesterObjectId }, // exclude self
     })
-    .select('_id email')
-    .limit(10);
+      .select('_id email')
+      .limit(10);
+
     res.json(users);
   } catch (error) {
     console.error('Error searching users:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
+
+app.post('/settings/edit-user', async(req:Request, res:Response)=>{
+  const {userId, firstName, lastName} = req.body;
+  try {
+    const updateUser = await User.findByIdAndUpdate(
+      userId,
+      {firstName, lastName},
+      {new:true}
+    )
+
+    if(!updateUser){
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+    res.json({ message: "User updated successfully", user: updateUser });
+
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({ message: "Server error" });
+    
+  }
+
+
+})
 
 
 /*app.get('/direct-message', async (req, res)=>{

@@ -97,11 +97,11 @@ const RegisterPage = (): JSX.Element =>{
           onChange={handleChange} required/>
 
             <label>Password</label>
-            <input type= "text" placeholder="Password" name="password" value={formData.password}
+            <input type= "password" placeholder="Password" name="password" value={formData.password}
           onChange={handleChange} required/>
 
             <label>Confirm password</label>
-            <input type= "text" placeholder="Confirm password" name="confirmPassword" value={formData.confirmPassword}
+            <input type= "password" placeholder="Confirm password" name="confirmPassword" value={formData.confirmPassword}
           onChange={handleChange} required />
 
 

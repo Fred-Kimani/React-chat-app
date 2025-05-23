@@ -1,8 +1,11 @@
 import { JSX, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../useAuth";
 import CreateGroup from "./createGroup";
 import GroupChat from "./groupChat";
+import { FcSettings } from "react-icons/fc";
+import Settings from "./settings";
+
 
 interface ChatRoom {
   _id: string;
@@ -15,11 +18,8 @@ interface User{
   email: string
 }
 
-interface startPrivateChat {
-  onChatCreated: () => void;
-}
 
-const ListOfChats: React.FC<startPrivateChat> = ({ onChatCreated}) => {
+const ListOfChats: React.FC= () => {
   const [email, setEmail] = useState('');
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
@@ -121,6 +121,19 @@ const ListOfChats: React.FC<startPrivateChat> = ({ onChatCreated}) => {
 
      <div className="listed-groups-container">
      <h2>Welcome, {user?.email}</h2>
+     <Link
+    to="/settings/user"
+    style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: '0.5rem',
+      textDecoration: 'none',
+      color: 'inherit',
+    }}
+  >
+    <FcSettings />
+    <span>Settings</span>
+  </Link>
      <button onClick={handleLogout} style={{ marginTop: '1rem' }}>
         Logout
       </button>

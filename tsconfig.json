@@ -1,4 +1,16 @@
 {
+
+  "compilerOptions": {
+    "outDir": "./dist",
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true
+  },
+
+  
+
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

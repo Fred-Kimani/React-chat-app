@@ -15,6 +15,8 @@ import PrivateRoute from './pages/privateRoutes'
 //import privateChat from './pages/privateChat'
 import GroupChat from './pages/groupChat'
 import GroupChatWrapper from './pages/groupChatWrapper'
+import Settings from './pages/settings'
+import GroupSettings from './pages/GroupSettings'
 
 
 
@@ -62,6 +64,26 @@ const App: React.FC =() => {
         </PrivateRoute>
       }
       />
+
+      <Route path='/settings/user'
+      element = {
+       <PrivateRoute>
+         <Settings/>
+      </PrivateRoute>
+       }
+      />
+
+      <Route path='/settings/group/:id'
+      element ={
+       <PrivateRoute>
+          <GroupSettings/>
+       </PrivateRoute>
+       }
+     />
+
+
+
+      
 
       
 

@@ -36,11 +36,19 @@ type ChatRoom ={
 
 }
 
-type Message = {
-  sender: string,
-  content: string,
-  roomId: string
+interface IUser {
+  _id: mongoose.Types.ObjectId;
+  email: string;
 }
+
+interface IMessage {
+  _id: mongoose.Types.ObjectId;
+  sender: mongoose.Types.ObjectId | IUser;  // sender can be ObjectId or populated IUser
+  roomId: mongoose.Types.ObjectId;
+  content: string;
+  createdAt: Date;
+}
+
 
 type PrivateChatKey = string;
 
@@ -90,24 +98,39 @@ io.on('connection', (socket) => {
   });
 
   // === Handle chat messages ===
-  socket.on('send-message', async(message: Message) => {
+  socket.on('send-message', async (message: {
+    sender: string; // id as string
+    content: string;
+    roomId: string;
+  }) => {
     try {
+      // Save message to DB
       const savedMessage = await Message.create({
         sender: message.sender,
         content: message.content,
-        roomId: message.roomId
+        roomId: message.roomId,
       });
+  
+      // Populate sender email field
+      const populated = await savedMessage.populate<{ sender: IUser }>('sender', 'email');
+  
+      // Now populated.sender has .email for sure
       io.to(message.roomId).emit('receive-message', {
-        ...message,
-        _id:savedMessage._id,
-        createdAt:savedMessage.createdAt
+        _id: populated._id,
+        content: populated.content,
+        sender: {
+          _id: populated.sender._id,
+          email: populated.sender.email,
+        },
+        roomId: populated.roomId,
+        createdAt: populated.createdAt,
       });
-      
     } catch (error) {
       console.error('❌ Error saving message:', error);
     }
-    console.log('Message to', message.roomId, ':', message.content);
   });
+  
+  
 
   socket.on('create-group', ({ groupName, username }) => {
     const groupId = `group_${Date.now()}`;
@@ -459,10 +482,36 @@ app.post('/settings/edit-user', async(req:Request, res:Response)=>{
 
   } catch (error) {
     console.error("Error updating user:", error);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Internal server error" });
     
   }
 
+
+})
+
+
+app.post('/settings/group/:id', async (req: Request, res:Response)=>{
+  const {roomId} = req.params;
+  const {groupName, groupDescription, } = req.body;
+
+  try {
+
+    const updatedGroup = await ChatRoom.findByIdAndUpdate(
+      roomId,
+      {groupName, groupDescription},
+      {new:true}
+    )
+
+    if(!updatedGroup){
+      res.status(404).json({message:"No group with this id exists"})
+      return;
+    }
+    res.json({message: "Group details updated", group:updatedGroup})
+    
+  } catch (error) {
+    res.status(500).json({message:'Internal server error'})
+    
+  }
 
 })
 

@@ -17,20 +17,23 @@ router.post("/register", async (req: Request, res: Response) => {
       // Check if all fields are provided
       if (!email || !firstName || !lastName || !password || !confirmPassword) {
         console.log('Error: Missing required fields');
-        return res.status(400).json({ error: 'All fields are required.' });
+         res.status(400).json({ error: 'All fields are required.' });
+         return;
       }
   
       // Check if passwords match
       if (password !== confirmPassword) {
         console.log('Error: Passwords do not match');
-        return res.status(400).json({ error: 'Passwords do not match.' });
+         res.status(400).json({ error: 'Passwords do not match.' });
+         return;
       }
   
       // Check if user already exists
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         console.log(`Error: User with email ${email} already exists`);
-        return res.status(400).json({ message: 'A user with this email already exists' });
+         res.status(400).json({ message: 'A user with this email already exists' });
+         return;
       }
   
       // Hash the password and create the user
@@ -64,7 +67,8 @@ router.post("/register", async (req: Request, res: Response) => {
     } catch (error) {
       // Log error and send internal server error response
       console.error('Internal server error:', error);
-      return res.status(500).json({ message: 'Internal server error' });
+       res.status(500).json({ message: 'Internal server error' });
+       return;
     }
 
 }); // Use registerUser for /register endpoint

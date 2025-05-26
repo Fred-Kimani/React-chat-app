@@ -3,6 +3,7 @@ import socket from '/Users/turnbull_f/Desktop/react-apps/chat-app/backend/src/so
 import { useAuth } from '../useAuth';
 import { FcSettings } from "react-icons/fc";
 import { Link } from 'react-router-dom';
+
 // chalenge: set up voice chat rooms
 
 const GroupChat = ({roomId, name}:{roomId: string, name:string}): JSX.Element => {
@@ -16,6 +17,25 @@ const GroupChat = ({roomId, name}:{roomId: string, name:string}): JSX.Element =>
     content: string;
     createdAt: string;
   };
+
+  const formatDateLabel =(date: Date | string): string => {
+    const msgDate = new Date(date);
+    const today = new Date();
+    const yesterday = new Date();
+    yesterday.setDate(today.getDate() - 1);
+  
+    const isSameDay = (d1: Date, d2: Date) =>
+      d1.getDate() === d2.getDate() &&
+      d1.getMonth() === d2.getMonth() &&
+      d1.getFullYear() === d2.getFullYear();
+  
+    if (isSameDay(msgDate, today)) return 'Today';
+    if (isSameDay(msgDate, yesterday)) return 'Yesterday';
+  
+    return msgDate.toLocaleDateString('de-DE'); // dd.mm.yyyy
+  }
+  
+  
 
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -90,18 +110,38 @@ const GroupChat = ({roomId, name}:{roomId: string, name:string}): JSX.Element =>
     <FcSettings />
     <span>Settings</span>
   </Link>
-      
+
   <ul style={{ listStyleType: 'none', padding: 0 }}>
-  {messages.map((msg) => {
-    const isOwnMessage = msg.sender._id === user._id;
+  {messages.reduce<JSX.Element[]>((acc, msg, index) => {
+    const currentDateLabel = formatDateLabel(msg.createdAt);
+    const prevDateLabel =
+      index > 0 ? formatDateLabel(messages[index - 1].createdAt) : null;
+
+    if (index === 0 || currentDateLabel !== prevDateLabel) {
+      acc.push(
+        <li
+          key={`date-${msg._id}`}
+          style={{
+            textAlign: 'center',
+            color: '#999',
+            fontWeight: 'bold',
+            margin: '1rem 0',
+          }}
+        >
+          {currentDateLabel}
+        </li>
+      );
+    }
+
+    const isOwnMessage = msg.sender.email === user.email;
     const time = new Date(msg.createdAt).toLocaleTimeString([], {
       hour: '2-digit',
       minute: '2-digit',
     });
 
-    return (
+    acc.push(
       <li
-        key={msg._id}
+        key={msg._id.toString()}
         style={{
           textAlign: isOwnMessage ? 'right' : 'left',
           margin: '8px 0',
@@ -128,8 +168,11 @@ const GroupChat = ({roomId, name}:{roomId: string, name:string}): JSX.Element =>
         </div>
       </li>
     );
-  })}
+
+    return acc;
+  }, [])}
 </ul>
+
 
       <input value={input} onChange={(e) => setInput(e.target.value)} />
       <button onClick={sendMessage}>Send</button>

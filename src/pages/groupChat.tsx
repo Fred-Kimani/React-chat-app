@@ -3,11 +3,12 @@ import socket from '/Users/turnbull_f/Desktop/react-apps/chat-app/backend/src/so
 import { useAuth } from '../useAuth';
 import { FcSettings } from "react-icons/fc";
 import { Link } from 'react-router-dom';
+import AutoGrowingTextarea from './AutoGrowingTextarea';
 
 // chalenge: set up voice chat rooms
 
 const GroupChat = ({roomId, name}:{roomId: string, name:string}): JSX.Element => {
-
+  
   type Message = {
     _id: string;
     sender: {
@@ -174,7 +175,7 @@ const GroupChat = ({roomId, name}:{roomId: string, name:string}): JSX.Element =>
 </ul>
 
 
-      <input value={input} onChange={(e) => setInput(e.target.value)} />
+      <AutoGrowingTextarea value={input} onChange={(e) => setInput(e.target.value)} />
       <button onClick={sendMessage}>Send</button>
     </div>
   );

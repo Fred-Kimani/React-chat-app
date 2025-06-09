@@ -1,10 +1,9 @@
-import { JSX, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../useAuth";
 import CreateGroup from "./createGroup";
 import GroupChat from "./groupChat";
 import { FcSettings } from "react-icons/fc";
-import Settings from "./settings";
 
 
 interface ChatRoom {

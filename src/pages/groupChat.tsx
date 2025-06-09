@@ -96,89 +96,53 @@ const GroupChat = ({roomId, name}:{roomId: string, name:string}): JSX.Element =>
   };
 
   return (
-    <div className='group-chat-container'>
-      <h2>{name}</h2>
-      <Link
-    to={`/settings/group/${roomId}`}
-    style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.5rem',
-      textDecoration: 'none',
-      color: 'inherit',
-    }}
-  >
-    <FcSettings />
-    <span>Settings</span>
-  </Link>
-
-  <ul style={{ listStyleType: 'none', padding: 0 }}>
-  {messages.reduce<JSX.Element[]>((acc, msg, index) => {
-    const currentDateLabel = formatDateLabel(msg.createdAt);
-    const prevDateLabel =
-      index > 0 ? formatDateLabel(messages[index - 1].createdAt) : null;
-
-    if (index === 0 || currentDateLabel !== prevDateLabel) {
-      acc.push(
-        <li
-          key={`date-${msg._id}`}
-          style={{
-            textAlign: 'center',
-            color: '#999',
-            fontWeight: 'bold',
-            margin: '1rem 0',
-          }}
-        >
-          {currentDateLabel}
-        </li>
-      );
-    }
-
-    const isOwnMessage = msg.sender.email === user.email;
-    const time = new Date(msg.createdAt).toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
-    acc.push(
-      <li
-        key={msg._id.toString()}
-        style={{
-          textAlign: isOwnMessage ? 'right' : 'left',
-          margin: '8px 0',
-        }}
-      >
-        <div
-          style={{
-            display: 'inline-block',
-            backgroundColor: isOwnMessage ? '#dcf8c6' : '#f1f0f0',
-            padding: '10px 14px',
-            borderRadius: '16px',
-            maxWidth: '70%',
-          }}
-        >
-          {!isOwnMessage && (
-            <div style={{ fontSize: '0.8em', fontWeight: 'bold' }}>
-              {msg.sender.email}
-            </div>
-          )}
-          <div>{msg.content}</div>
-          <div style={{ fontSize: '0.75em', color: '#666', marginTop: '4px' }}>
-            {time}
-          </div>
-        </div>
-      </li>
-    );
-
-    return acc;
-  }, [])}
-</ul>
-
-
-      <AutoGrowingTextarea value={input} onChange={(e) => setInput(e.target.value)} />
-      <button onClick={sendMessage}>Send</button>
+    <div className="chatroom-container">
+      <div className="chatroom-header">
+        <h2>{name}</h2>
+        <Link to={`/settings/group/${roomId}`} state={{ name }} className="chat-settings-link">
+          <FcSettings />
+          <span>Settings</span>
+        </Link>
+      </div>
+  
+      <ul className="chat-messages">
+        {messages.reduce<JSX.Element[]>((acc, msg, index) => {
+          const currentDateLabel = formatDateLabel(msg.createdAt);
+          const prevDateLabel = index > 0 ? formatDateLabel(messages[index - 1].createdAt) : null;
+  
+          if (index === 0 || currentDateLabel !== prevDateLabel) {
+            acc.push(
+              <li key={`date-${msg._id}`} className="chat-date-separator">
+                {currentDateLabel}
+              </li>
+            );
+          }
+  
+          const isOwnMessage = msg.sender.email === user.email;
+          const time = new Date(msg.createdAt).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+          });
+  
+          acc.push(
+            <li key={msg._id} className={isOwnMessage ? 'message-right' : 'message-left'}>
+              {!isOwnMessage && <div className="sender-email">{msg.sender.email}</div>}
+              <div>{msg.content}</div>
+              <div className="timestamp">{time}</div>
+            </li>
+          );
+  
+          return acc;
+        }, [])}
+      </ul>
+  
+      <div className="chat-input-container">
+        <AutoGrowingTextarea value={input} onChange={(e) => setInput(e.target.value)} />
+        <button onClick={sendMessage}>Send</button>
+      </div>
     </div>
   );
+  
 };
 
 export default GroupChat;

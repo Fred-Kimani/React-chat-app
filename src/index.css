@@ -369,6 +369,75 @@ button:disabled {
 
 
 
+.chatroom-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.chat-settings-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #333;
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.chat-settings-link:hover {
+  color: #007bff;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 1rem;
+  list-style: none;
+}
+
+.chat-date-separator {
+  text-align: center;
+  color: #999;
+  font-weight: bold;
+  margin: 1rem 0;
+}
+
+.sender-email {
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+.timestamp {
+  font-size: 0.75rem;
+  color: #666;
+  margin-top: 4px;
+  text-align: right;
+}
+
+.chat-input-container {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: auto;
+  align-items: center;
+}
+
+.group-chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.chatroom-container {
+  background: linear-gradient(to bottom right, #f1f4f8, #dfe7f3);
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+
+
+
 
 
 

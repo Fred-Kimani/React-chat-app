@@ -14,6 +14,9 @@ html{
 body{
   height: 100%;
   width: 100%;
+  background: #076585;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #fff, #076585);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #fff, #076585); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
   
 }
@@ -27,12 +30,15 @@ body{
 *{
   font-family: "Comic Relief", system-ui;
 }
+
 /* Welcome page styles */
 .Welcome-Page-Container {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: rgba(255, 255, 255, 0.354);
+
+
+  /*background-color: rgba(255, 255, 255, 0.354);*/
   font-family: "Comic Relief", system-ui;
   font-weight: 400;
   font-style: normal;
@@ -60,7 +66,6 @@ body{
   top: 0;
   width: 100%;
   padding-top: 20px;
-  background-color: white;
   z-index: 1000;
   margin-bottom: 5rem;
 }
@@ -75,6 +80,42 @@ body{
   color: #3f51b5 !important;
   transform: scale(1.1) !important;
 }
+
+.typewriter-container {
+  min-height: 2.5rem; /* adjust as needed based on your text size */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+ 
+.features-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.feature-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  padding: 1rem;
+  width: 220px;
+  text-align: center;
+}
+
+.feature-card img {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0.5rem;
+}
+
+.testimonials{
+  margin-top: 1rem;
+}
+
+/*Registration Page*/
 
 .registration-page{
   display: flex;
@@ -399,7 +440,7 @@ button:disabled {
 
 .chat-date-separator {
   text-align: center;
-  color: #999;
+  color:white;
   font-weight: bold;
   margin: 1rem 0;
 }
@@ -430,10 +471,54 @@ button:disabled {
   height: 100%;
 }
 .chatroom-container {
-  background: linear-gradient(to bottom right, #f1f4f8, #dfe7f3);
+  
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
 }
+
+.group-name-container.selected {
+  background-color: #007bff; 
+  color: white;
+  font-weight: bold;
+}
+
+.settings-page-container{
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+}
+
+.settings-page-container button{
+  width: 10rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  
+}
+
+.settings-box{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10rem;
+  background-color: #8f9092;
+  box-shadow: #333;
+  border-radius: 10px;
+  width: 45%;
+  padding-bottom: 1rem;
+}
+
+.logout-button{
+  margin-top: 1rem;
+  background-color: rgb(232, 22, 22);
+
+}
+
+
 
 
 

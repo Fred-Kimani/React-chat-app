@@ -96,12 +96,12 @@ const GroupChat = ({roomId, name}:{roomId: string, name:string}): JSX.Element =>
   };
 
   return (
-    <div className="chatroom-container">
+    <div className="chatroom-container" style={{ backgroundImage: "url('/background-chat.png')" }}>
       <div className="chatroom-header">
-        <h2>{name}</h2>
+        <h2 style={{color:'white'}}>{name}</h2>
         <Link to={`/settings/group/${roomId}`} state={{ name }} className="chat-settings-link">
-          <FcSettings />
-          <span>Settings</span>
+          <FcSettings style={{background:'white'}} />
+          <span style={{color:'white'}}>Settings</span>
         </Link>
       </div>
   

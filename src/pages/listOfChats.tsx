@@ -6,6 +6,7 @@ import GroupChat from "./groupChat";
 import { FcSettings } from "react-icons/fc";
 
 
+
 interface ChatRoom {
   _id: string;
   name: string;
@@ -110,11 +111,6 @@ const ListOfChats: React.FC= () => {
     fetchRooms();
   }, []);
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
   return (
     <div className="chat-main-container">
 
@@ -133,9 +129,6 @@ const ListOfChats: React.FC= () => {
     <FcSettings />
     <span>Settings</span>
   </Link>
-     <button onClick={handleLogout} style={{ marginTop: '1rem' }}>
-        Logout
-      </button>
 
       <br /><br />
 
@@ -185,12 +178,21 @@ const ListOfChats: React.FC= () => {
       {showCreateGroup && <CreateGroup onGroupCreated={fetchRooms} setSelectedRoom={setSelectedRoom} />}
 
       <ul className="list-of-groups">
-        {chatRooms.map((room) => (
-          <li key={room._id} className="group-name-container" onClick={() => setSelectedRoom({roomId:room._id, name:room.name})}>
-            {room.name}
-          </li>
-        ))}
-      </ul>
+          {chatRooms.map((room) => {
+            const isSelected = selectedRoom?.roomId === room._id;
+
+              return (
+                   <li
+                    key={room._id}
+                   className={`group-name-container ${isSelected ? 'selected' : ''}`}
+                   onClick={() => setSelectedRoom({ roomId: room._id, name: room.name })} >
+                     {room.name}
+                    </li>
+                        );
+                    })}
+        </ul>
+
+
       </div>
       <hr />
 

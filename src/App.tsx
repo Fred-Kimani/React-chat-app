@@ -25,7 +25,7 @@ const App: React.FC =() => {
   
 
   return (
-    <div>
+    <div className='main-app-container'>
       <ToastContainer position="top-right" autoClose={5000} hideProgressBar newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
     
     <Routes>

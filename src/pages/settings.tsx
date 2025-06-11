@@ -1,14 +1,31 @@
 import React, { useState } from "react";
 import { useAuth } from "../useAuth";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import BackButton from './BackButton';
+
+import '../index.css'
+
+
 
 
 const Settings: React.FC  = ()=>{
-    const {user} = useAuth();
+    const {user,logout} = useAuth();
     const [showNameInput, setShowNameInput] = useState<boolean>(false);
     const [firstName, setFirstName] = useState<string>(user?.firstName);
     const [lastName, setLastName] = useState<string>(user?.lastName);
     const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
+
+    const navigate = useNavigate()
+
+    const handleLogout = () => {
+        const confirmed = window.confirm("Are you sure you want to log out?");
+        if (confirmed) {
+          logout();            // your logout function
+          navigate('/login');  // redirect to login page
+        }
+      };
+      
 
     const handleSaveChanges = async(e:React.FormEvent<HTMLFormElement>): Promise<void> =>{
         e.preventDefault();
@@ -51,7 +68,19 @@ const Settings: React.FC  = ()=>{
     }
 
     return(
-        <div className="settings-pag-container">
+
+        <div className="settings-page-container">
+
+            <div className="settings-box">
+
+            <div className="back-button">
+                  <BackButton />
+                <h1>This is a page</h1>
+                </div>
+                 <button onClick={handleLogout} className="logout-button">
+                   Logout
+                 </button>
+            
             <form 
             onSubmit={(e)=>{
                 e.preventDefault();
@@ -74,6 +103,7 @@ const Settings: React.FC  = ()=>{
             )
         }
         </form>
+        </div>
         </div>
     )
 

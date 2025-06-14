@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Comic+Relief:wght@400;700&display=swap');
 
 
-/*@tailwind base;
+@tailwind base;
 @tailwind components;
-@tailwind utilities;*/
+@tailwind utilities;
 
 html{
   height: 100%;
@@ -14,9 +14,7 @@ html{
 body{
   height: 100%;
   width: 100%;
-  background: #076585;  /* fallback for old browsers */
-  background: -webkit-linear-gradient(to right, #fff, #076585);  /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(to right, #fff, #076585); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
 
   
 }
@@ -24,6 +22,9 @@ body{
 #root{
   height: 100%;
   width: 100%;
+  background: #076585;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #fff, #076585);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #fff, #076585); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
 }
 
@@ -36,6 +37,7 @@ body{
   display: flex;
   flex-direction: column;
   align-items: center;
+
 
 
   /*background-color: rgba(255, 255, 255, 0.354);*/
@@ -485,31 +487,58 @@ button:disabled {
   font-weight: bold;
 }
 
-.settings-page-container{
+/* --- Keep your existing styles --- */
+
+.settings-page-container {
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
+  background-color: whitesmoke;
+  width: 100%;
+  min-height: 100vh;
 }
 
-.settings-page-container button{
+.settings-page-container button {
   width: 10rem;
   margin-top: 0.5rem;
   margin-bottom: 0.5rem;
-  
 }
 
-.settings-box{
+.settings-box {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 10rem;
+  margin-top: 0;
+  margin-bottom: 10rem;
   background-color: #8f9092;
   box-shadow: #333;
   border-radius: 10px;
   width: 45%;
   padding-bottom: 1rem;
+  gap: 1rem; 
+  position: relative;
+  padding-top: 2.5rem; 
+  padding-left: 2.5rem;
+}
+
+
+
+.settings-box form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem; 
+
+}
+
+.edit-name- {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
 }
 
 .logout-button{
@@ -518,6 +547,120 @@ button:disabled {
 
 }
 
+.logout-button:hover{
+  background-color: rgb(223, 84, 84);
+}
+
+.back-button-container {
+  position: absolute; 
+  top: 1rem;          
+  left: 1rem;         
+}
+
+.back-button-container button {
+  margin: 0;
+}
+
+
+
+/*Testimonials*/
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(calc(-26rem * 6));
+  }
+}
+
+.testimonials-container {
+  width: 100%;
+  background-color: #f9fafb;
+  padding: 5rem 1rem;
+  text-align: center;
+  font-family: sans-serif;
+}
+
+.testimonials-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: #1f2937;
+  margin-bottom: 3rem;
+}
+
+.testimonial-mask {
+  max-width: 90rem;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+}
+
+.testimonial-fade-left,
+.testimonial-fade-right {
+  position: absolute;
+  top: 0;
+  width: 6rem;
+  height: 100%;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.testimonial-fade-left {
+  left: 0;
+  background: linear-gradient(to right, #f9fafb, transparent);
+}
+
+.testimonial-fade-right {
+  right: 0;
+  background: linear-gradient(to left, #f9fafb, transparent);
+}
+
+.testimonial-track {
+  display: flex;
+  animation: scroll 40s linear infinite;
+}
+
+.testimonial-mask:hover .testimonial-track {
+  animation-play-state: paused;
+}
+
+.testimonial-card {
+  flex-shrink: 0;
+  width: 26rem;
+  margin: 0 1rem;
+  padding: 2rem;
+  background: white;
+  border-radius: 1.5rem;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s ease;
+}
+
+.testimonial-card:hover {
+  transform: scale(1.05);
+}
+
+.testimonial-text {
+  font-size: 1.125rem;
+  color: #374151;
+  line-height: 1.75rem;
+  font-style: italic;
+}
+
+.testimonial-author {
+  margin-top: 1rem;
+  text-align: right;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.testimonial-note {
+  margin-top: 2.5rem;
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
 
 
 

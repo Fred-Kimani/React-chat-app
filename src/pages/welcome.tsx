@@ -3,6 +3,7 @@ import { Typewriter } from "react-simple-typewriter";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from "react-router-dom";
 import { FaBolt, FaLock, FaUsers } from 'react-icons/fa';
+import Testimonials from "./Testimonials";
 
 
 
@@ -70,11 +71,7 @@ const WelcomePage = () : JSX.Element =>{
 
        
        <div className="testimonials">
-         <blockquote>“The fastest messaging app I’ve used. Love it!” — Alex</blockquote>
-         <blockquote>“Private, simple, and clean. 5/5.” — Grace</blockquote>
-         <blockquote>“The app is very easy to use and lightning fast” — Wachira</blockquote>
-         <blockquote>“Why didn't I discover this app earlier ?” — Lerato</blockquote>
-         <blockquote>“Very intuitive and minimalistic in a positive way ;-)” — Keisha</blockquote>
+       <Testimonials />
 
        </div>
 

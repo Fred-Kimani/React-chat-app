@@ -48,6 +48,7 @@ const Settings: React.FC  = ()=>{
                 toast.success(data.message, {
                     position:'top-right'
                 })
+                setShowNameInput(!showNameInput)
             }
             else {
                     // Handle errors (e.g., display error messages)
@@ -72,14 +73,11 @@ const Settings: React.FC  = ()=>{
         <div className="settings-page-container">
 
             <div className="settings-box">
+             <div className="back-button-container">
+               <BackButton />
+             </div>
 
-            <div className="back-button">
-                  <BackButton />
-                <h1>This is a page</h1>
-                </div>
-                 <button onClick={handleLogout} className="logout-button">
-                   Logout
-                 </button>
+             <h1>Settings Page</h1>
             
             <form 
             onSubmit={(e)=>{
@@ -88,7 +86,7 @@ const Settings: React.FC  = ()=>{
             }}
             >
             <p>Edit Profile: {firstName} {lastName}</p>
-            <button onClick={()=> setShowNameInput(!showNameInput)}>
+            <button type="button" onClick={()=> setShowNameInput(!showNameInput)}>
             { showNameInput ? "Cancel": "Edit name" }
             </button>
         {  showNameInput &&(
@@ -103,6 +101,10 @@ const Settings: React.FC  = ()=>{
             )
         }
         </form>
+
+        <button onClick={handleLogout} className="logout-button">
+                   Logout
+                 </button>
         </div>
         </div>
     )

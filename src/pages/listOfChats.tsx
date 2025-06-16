@@ -4,6 +4,9 @@ import { useAuth } from "../useAuth";
 import CreateGroup from "./createGroup";
 import GroupChat from "./groupChat";
 import { FcSettings } from "react-icons/fc";
+import { IoChatboxEllipsesOutline } from "react-icons/io5";
+import { IoSettingsOutline } from "react-icons/io5";
+import { IoSearchOutline } from "react-icons/io5";
 
 
 
@@ -24,6 +27,7 @@ const ListOfChats: React.FC= () => {
   const [showCreateGroup, setShowCreateGroup] = useState(false);
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<{ roomId: string; name: string } | null>(null);
+  const [showNavbar, setShowNavbar] = useState<boolean>(false);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState<User[]>([]);
@@ -31,6 +35,10 @@ const ListOfChats: React.FC= () => {
 
   const navigate = useNavigate();
   const { logout, user } = useAuth();
+
+  const handleShowNavbar = () =>{
+    setShowNavbar(!showNavbar)
+  }
 
 
   useEffect(() => {
@@ -114,23 +122,73 @@ const ListOfChats: React.FC= () => {
   return (
     <div className="chat-main-container">
 
-     <div className="listed-groups-container">
-     <h2>Welcome, {user?.email}</h2>
-     <Link
+<div className="side-navbar" style={{
+  backgroundColor:'whitesmoke', 
+  height:'100%',
+  width:'5%', 
+  display:'flex',
+  flexDirection:'column', 
+  alignItems:'center'
+    }}>
+      
+      <Link
+      style={{
+        display: 'flex',
+        flex:'column',
+        alignItems: 'center',
+        gap: '0.5rem',
+        textDecoration: 'none',
+        color: 'inherit',
+        justifyContent:'center'
+
+      }}
+      >
+      <IoChatboxEllipsesOutline style={{marginTop:'0.2rem', }} />
+      </Link>
+      <p>All chats</p>
+
+      <Link
+            style={{
+              display: 'flex',
+              flex:'column',
+              alignItems: 'center',
+              gap: '0.5rem',
+              textDecoration: 'none',
+              color: 'inherit',
+              justifyContent:'center'
+      
+            }}
+      >
+      
+      <IoSearchOutline style={{marginTop:'0.2rem'}}/>
+      </Link>
+      <p>Search</p>
+   
+      <Link
     to="/settings/user"
     style={{
       display: 'flex',
+      flex:'column',
       alignItems: 'center',
       gap: '0.5rem',
       textDecoration: 'none',
       color: 'inherit',
+      justifyContent:'center'
     }}
   >
-    <FcSettings />
-    <span>Settings</span>
-  </Link>
+    <IoSettingsOutline style={{marginTop:'0.2rem'}}/>
 
-      <br /><br />
+  </Link>
+  <p>Settings</p>
+    </div>
+
+
+
+
+
+     <div className="listed-groups-container">
+     {/*<h2>Welcome, {user?.email}</h2> */}
+
 
       <div>
       <input

@@ -512,7 +512,7 @@ button:disabled {
   align-items: center;
   margin-top: 0;
   margin-bottom: 10rem;
-  background-color: #8f9092;
+  background-color: #dee1e8;
   box-shadow: #333;
   border-radius: 10px;
   width: 45%;
@@ -533,17 +533,24 @@ button:disabled {
 
 }
 
-.edit-name- {
+.edit-name-button{
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
   margin-top: 1rem;
+  border-radius: 8px;
 }
 
 .logout-button{
   margin-top: 1rem;
   background-color: rgb(232, 22, 22);
+  border-radius: 8px;
+
+}
+
+.cancel-edit-button, .save-name-button{
+  border-radius: 8px;
 
 }
 

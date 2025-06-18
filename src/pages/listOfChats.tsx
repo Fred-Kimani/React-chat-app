@@ -7,6 +7,7 @@ import { FcSettings } from "react-icons/fc";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoSearchOutline } from "react-icons/io5";
+import { CiSquarePlus } from "react-icons/ci";
 
 
 
@@ -24,7 +25,8 @@ interface User{
 
 const ListOfChats: React.FC= () => {
   const [email, setEmail] = useState('');
-  const [showCreateGroup, setShowCreateGroup] = useState(false);
+  const [activePanel, setActivePanel] = useState<'search' | 'create-group' | 'private-chat' | null>(null);
+
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<{ roomId: string; name: string } | null>(null);
   const [showNavbar, setShowNavbar] = useState<boolean>(false);
@@ -120,67 +122,104 @@ const ListOfChats: React.FC= () => {
   }, []);
 
   return (
-    <div className="chat-main-container">
+    <div className="chat-main-container" id="main-chat">
 
 <div className="side-navbar" style={{
-  backgroundColor:'whitesmoke', 
-  height:'100%',
-  width:'5%', 
-  display:'flex',
-  flexDirection:'column', 
-  alignItems:'center'
-    }}>
-      
-      <Link
-      style={{
-        display: 'flex',
-        flex:'column',
-        alignItems: 'center',
-        gap: '0.5rem',
-        textDecoration: 'none',
-        color: 'inherit',
-        justifyContent:'center'
-
-      }}
-      >
-      <IoChatboxEllipsesOutline style={{marginTop:'0.2rem', }} />
-      </Link>
-      <p>All chats</p>
-
-      <Link
-            style={{
-              display: 'flex',
-              flex:'column',
-              alignItems: 'center',
-              gap: '0.5rem',
-              textDecoration: 'none',
-              color: 'inherit',
-              justifyContent:'center'
-      
-            }}
-      >
-      
-      <IoSearchOutline style={{marginTop:'0.2rem'}}/>
-      </Link>
-      <p>Search</p>
-   
-      <Link
-    to="/settings/user"
+  backgroundColor: 'whitesmoke',
+  height: '100%',
+  width: '5%',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center'
+}}>
+  {/* All Chats */}
+  <button
+    onClick={() => setActivePanel(null)}
     style={{
+      background: 'none',
+      border: 'none',
+      color: activePanel === null ? 'dodgerblue' : 'inherit',
       display: 'flex',
-      flex:'column',
+      flexDirection: 'column',
       alignItems: 'center',
-      gap: '0.5rem',
-      textDecoration: 'none',
-      color: 'inherit',
-      justifyContent:'center'
+      cursor: 'pointer'
     }}
   >
-    <IoSettingsOutline style={{marginTop:'0.2rem'}}/>
+    <IoChatboxEllipsesOutline style={{ marginTop: '0.2rem' }} />
+    <p style={{ fontSize: '0.75rem' }}>All chats</p>
+  </button>
 
-  </Link>
-  <p>Settings</p>
-    </div>
+  {/* Search Chats */}
+  <button
+    onClick={() => setActivePanel(activePanel === 'search' ? null : 'search')}
+    style={{
+      background: 'none',
+      border: 'none',
+      color: activePanel === 'search' ? 'dodgerblue' : 'inherit',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      cursor: 'pointer'
+    }}
+  >
+    <IoSearchOutline style={{ marginTop: '0.2rem' }} />
+    <p style={{ fontSize: '0.75rem' }}>Search</p>
+  </button>
+
+  {/* Create Private Chat */}
+  <button
+    onClick={() => setActivePanel(activePanel === 'private-chat' ? null : 'private-chat')}
+    style={{
+      background: 'none',
+      border: 'none',
+      color: activePanel === 'private-chat' ? 'dodgerblue' : 'inherit',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      cursor: 'pointer'
+    }}
+  >
+    <CiSquarePlus />
+    <p style={{ fontSize: '0.75rem' }}>New Chat</p>
+  </button>
+
+  {/* Create Group */}
+  <button
+    onClick={() => setActivePanel(activePanel === 'create-group' ? null : 'create-group')}
+    style={{
+      background: 'none',
+      border: 'none',
+      color: activePanel === 'create-group' ? 'dodgerblue' : 'inherit',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      cursor: 'pointer'
+    }}
+  >
+    <CiSquarePlus />
+    <p style={{ fontSize: '0.75rem' }}>Create Group</p>
+  </button>
+
+  <Link
+  to="/settings/user"
+  style={{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: '0.5rem',
+    textDecoration: 'none',
+    color: 'inherit',
+    justifyContent: 'center',
+    marginTop: 'auto', // optional to push to bottom
+    paddingBottom: '1rem'
+  }}
+>
+  <IoSettingsOutline style={{ marginTop: '0.2rem' }} />
+  <p style={{ fontSize: '0.75rem' }}>Settings</p>
+</Link>
+
+</div>
+
 
 
 
@@ -191,49 +230,69 @@ const ListOfChats: React.FC= () => {
 
 
       <div>
-      <input
-        type="text"
-        placeholder="Search users by email..."
-        value={searchTerm}
-        onChange={(e) => {
-          setSearchTerm(e.target.value);
-          setShowOverlay(e.target.value.length >= 4);
-        }}
-      />
-
-{showOverlay && (
-  <div className="search-overlay" onClick={() => setShowOverlay(false)}>
-    <ul>
-      {searchResults.length > 0 ? (
-        searchResults.map(user => (
-          <li
-            key={user._id}
-            onClick={(e) => {
-              e.stopPropagation(); // prevent overlay from closing before click
-              console.log('I have been clicked:', user);
-              handleUserClick(user);
-              
-            }}
-          >
-            {user.email}
-          </li>
-        ))
-      ) : (
-        <li>No users found</li>
-      )}
-    </ul>
+{/* Search existing chats (groups/private) */}
+{activePanel === 'search' && (
+  <div>
+    <input
+      type="text"
+      placeholder="Search chats by name..."
+      value={searchTerm}
+      onChange={(e) => {
+        setSearchTerm(e.target.value);
+        // Optional: filter `chatRooms` instead of calling backend
+      }}
+    />
   </div>
 )}
+
+{/* Start a new private chat */}
+{activePanel === 'private-chat' && (
+  <div>
+    <input
+      type="text"
+      placeholder="Search users by email to chat..."
+      value={searchTerm}
+      onChange={(e) => {
+        setSearchTerm(e.target.value);
+        setShowOverlay(e.target.value.length >= 4);
+      }}
+    />
+
+    {showOverlay && (
+      <div className="search-overlay" onClick={() => setShowOverlay(false)}>
+        <ul>
+          {searchResults.length > 0 ? (
+            searchResults.map(user => (
+              <li
+                key={user._id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleUserClick(user);
+                  setActivePanel(null); // close panel
+                }}
+              >
+                {user.email}
+              </li>
+            ))
+          ) : (
+            <li>No users found</li>
+          )}
+        </ul>
+      </div>
+    )}
+  </div>
+)}
+
 
     </div>
 
       <h3>Available Groups</h3>
 
-      <button onClick={() => setShowCreateGroup(!showCreateGroup)}>
-        {showCreateGroup ? 'Cancel' : 'Create Group'}
-      </button>
 
-      {showCreateGroup && <CreateGroup onGroupCreated={fetchRooms} setSelectedRoom={setSelectedRoom} />}
+      {activePanel === 'create-group' && (
+  <CreateGroup onGroupCreated={fetchRooms} setSelectedRoom={setSelectedRoom} />
+)}
+
 
       <ul className="list-of-groups">
           {chatRooms.map((room) => {

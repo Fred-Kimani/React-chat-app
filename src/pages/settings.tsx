@@ -86,17 +86,17 @@ const Settings: React.FC  = ()=>{
             }}
             >
             <p>Edit Profile: {firstName} {lastName}</p>
-            <button type="button" onClick={()=> setShowNameInput(!showNameInput)}>
+            <button type="button" onClick={()=> setShowNameInput(!showNameInput)} className="cancel-edit-button">
             { showNameInput ? "Cancel": "Edit name" }
             </button>
         {  showNameInput &&(
-                <div className="edit-name-">
+                <div className="edit-name-button">
                     <label>First Name:</label>
                     <input type="text" value={firstName} onChange={(e)=>setFirstName(e.target.value)}></input>
 
                     <label>Last Name:</label>
                     <input type="text" value={lastName} onChange={(e)=>setLastName(e.target.value) }></input>
-                    <button type="submit" disabled={isSubmitting}>Save Changes</button>
+                    <button type="submit" disabled={isSubmitting} className="save-name-button">Save Changes</button>
                 </div>
             )
         }
